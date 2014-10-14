@@ -1,0 +1,33 @@
+#/usr/bin/env sh
+
+# Gets the lib folder relative to this script location
+# If this script is in /foo/bin, points to /foo/lib
+lib_path="./"
+
+. "$lib_path/common.sh"     || exit 1
+. "$lib_path/dispatch.sh"   || exit 1
+. "$lib_path/parser00.sh"       || exit 1
+
+# Dispatches commands to other parser00_(command|option) functions
+parser00 () ( dispatch parser00 "${@:-}" )
+
+# Displays help
+parser00_command_help ()
+{
+	cat <<-HELP
+	   Usage: parser00 [option_list...] [command]
+	          parser00 help, -h, --help [command]  Displays help for command.
+
+	Commands:
+
+	HELP
+}
+
+# Option handlers
+parser00_option_help    () ( parser00_command_help )
+parser00_option_h       () ( parser00_command_help )
+
+parser00_      () ( echo "No command provided. Try 'parser00 --help'";return 1 )
+parser00_call_ () ( echo "Call '$*' invalid. Try 'parser00 --help'"; return 1)
+
+parser00 "${@:-}"
